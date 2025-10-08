@@ -1,10 +1,3 @@
-/*
-    @auth     : karthick.d    06/10/2025
-    @desc     : parent container for all the three panel
-                split_panel
-                  items_panel
-
-*/
 import 'dart:math';
 
 import 'package:dashboard/bloc/bpwidgetprops/bpwidget_props_bloc.dart';
@@ -53,15 +46,11 @@ class _SplitPanelState extends State<SplitPanel> {
     final data = switch (start.$2) {
       Panel.upper => upper[start.$1],
       Panel.lower => lower[start.$1],
-      
     };
 
     setState(() {
       dragStart = start;
       hoveringData = data;
-      print("dragStart=>${dragStart}");
-      print("hoveringData=>${hoveringData}");
-      print("data=>${data}");
     });
   }
 
@@ -73,7 +62,6 @@ class _SplitPanelState extends State<SplitPanel> {
     setState(() {
       if (dropPreview!.$2 == Panel.upper) {
         upper.insert(max(dropPreview!.$1, upper.length), hoveringData!);
-        print("dropPreview=>${dropPreview}");
       }
     });
   }
@@ -115,7 +103,7 @@ class _SplitPanelState extends State<SplitPanel> {
                       childSize: itemSize,
                       columns: widget.columns,
                       panel: Panel.lower,
-                    
+
                       child: ItemPanel(
                         width: leftPanelWidth - 100,
                         crossAxisCount: widget.columns,
@@ -130,12 +118,12 @@ class _SplitPanelState extends State<SplitPanel> {
                     ),
                   ),
                 ),
-                // Positioned(
-                //   width: 2,
-                //   height: constraints.maxHeight,
-                //   left: leftPanelWidth,
-                //   child: ColoredBox(color: Colors.black),
-                // ),
+                Positioned(
+                  width: 2,
+                  height: constraints.maxHeight,
+                  left: leftPanelWidth,
+                  child: ColoredBox(color: Colors.black),
+                ),
                 Positioned(
                   // centerpanel for dragtarget
                   width: centerPanelWidth,
@@ -170,13 +158,10 @@ class _SplitPanelState extends State<SplitPanel> {
                   right: 0,
                   child: DecoratedBox(
                     decoration: BoxDecoration(color: Colors.pink.shade100),
-
-                    /// RightPanel - is parent model for props , action and
-                    /// datasource panel
                     child: RightPanel(
                       width: rightPanelWidth,
                       height: constraints.maxHeight,
-                      props: selectedWidget,
+                      props:selectedWidget,
                     ),
                   ),
                 ),

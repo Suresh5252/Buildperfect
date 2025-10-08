@@ -122,7 +122,18 @@ class _ItemsPanelState extends State<ItemPanel> {
                 ),
               ),
               selectedIndex == index
-                  ? GlobalStyles.selectedIcon
+                  ? Row(
+                    children: [
+                      GlobalStyles.selectedIcon,
+                     SizedBox(width: 5,),
+                      IconButton(onPressed: (){
+                        setState(() {
+                          itemsCopy.removeAt(selectedIndex);
+                        });
+                      }, 
+                      icon: GlobalStyles.deleteIcon)
+                    ],
+                  )
                   : GlobalStyles.fillerSizedBox50,
             ],
           ),
@@ -174,8 +185,19 @@ class _ItemsPanelState extends State<ItemPanel> {
                   // ),
                 ),
               ),
-              selectedIndex == index
-                  ? GlobalStyles.selectedIcon
+               selectedIndex == index
+                  ? Row(
+                    children: [
+                      GlobalStyles.selectedIcon,
+                     SizedBox(width: 5,),
+                      IconButton(onPressed: (){
+                        setState(() {
+                          itemsCopy.removeAt(selectedIndex);
+                        });
+                      }, 
+                      icon: GlobalStyles.deleteIcon)
+                    ],
+                  )
                   : GlobalStyles.fillerSizedBox50,
             ],
           ),
@@ -220,8 +242,19 @@ class _ItemsPanelState extends State<ItemPanel> {
                 ),
               ),
               GlobalStyles.fillerSizedBox50,
-              selectedIndex == index
-                  ? GlobalStyles.selectedIcon
+               selectedIndex == index
+                  ? Row(
+                    children: [
+                      GlobalStyles.selectedIcon,
+                      SizedBox(width: 5,),
+                      IconButton(onPressed: (){
+                        setState(() {
+                          itemsCopy.removeAt(selectedIndex);
+                        });
+                      }, 
+                      icon: GlobalStyles.deleteIcon)
+                    ],
+                  )
                   : GlobalStyles.fillerSizedBox50,
             ],
           ),
@@ -271,27 +304,29 @@ class _ItemsPanelState extends State<ItemPanel> {
   Widget build(BuildContext context) {
     /// have a copy of dragstartCopy to keep the local copy
     /// so
+    final itemsCopy = List<PlaceholderWidgets>.from(widget.items);
+    print('itemscopy => $itemsCopy');
     if (widget.panel == Panel.upper) {
       return ListView(
         padding: const EdgeInsets.all(4),
         children:
             itemsCopy.asMap().entries.map<Widget>((e) {
-              Widget child = Row(
-                children: [
-                  SizedBox(
-                    height: 50,
-                    width: 380,
+              Widget child = SizedBox(
+                height: 50,
+                width: 0,
 
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Center(child: getWidgetPlaceholders(e.value)),
-                    ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                ]
+                  child: Center(
+                    child: getWidgetPlaceholders(e.value, index: e.key),
+                  ),
+                ),
               );
+
+              // }
               return Padding(
                 padding: const EdgeInsets.only(
                   left: 100,

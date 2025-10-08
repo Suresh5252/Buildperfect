@@ -19,4 +19,6 @@ class GlobalStyles {
   );
 
   static SizedBox fillerSizedBox50 = SizedBox(width: 50);
+
+  static Icon deleteIcon=Icon(Icons.delete,color: Colors.red,);
 }
