@@ -7,8 +7,10 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:dashboard/appstyles/global_styles.dart';
+import 'package:dashboard/bloc/bpwidgetprops/model/bpwidget_props.dart';
 import 'package:dashboard/types/drag_drop_types.dart';
-import 'package:dashboard/widgets/lead_tab_bar.dart';
+import 'package:dashboard/widgets/containers/dragged_holder.dart';
 import 'package:dashboard/widgets/my_draggable_widget.dart';
 import 'package:dashboard/widgets/rightpanels/panel_header.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -24,6 +26,7 @@ class ItemPanel extends StatefulWidget {
   final PanelLocation? dragStart;
   final PanelLocation? dropPreview;
   final PlaceholderWidgets? hoveringData;
+  final Function(BpwidgetProps item)? onItemClicked;
   const ItemPanel({
     super.key,
     required this.width,
@@ -35,6 +38,7 @@ class ItemPanel extends StatefulWidget {
     required this.dragStart,
     required this.dropPreview,
     required this.hoveringData,
+    this.onItemClicked,
   });
 
   @override
@@ -59,47 +63,189 @@ class _ItemsPanelState extends State<ItemPanel> {
   /// which serves as visual placeholders which are dragged from
   /// left widgets panels
 
-  Widget getWidgetPlaceholders(PlaceholderWidgets controlName) {
+  int selectedIndex = 0;
+
+  Widget getWidgetPlaceholders(
+    PlaceholderWidgets controlName, {
+    int index = 0,
+  }) {
     return switch (controlName) {
-      PlaceholderWidgets.Textfield => TextField(
-        enabled: false,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: 'Textbox',
+      PlaceholderWidgets.Textfield => DraggedHolder(
+        onTapDraggedControl: () {
+          /// when draggedholder is selected , selected formcontrol
+          /// label and other properties should be autopopulate
+          /// props panel
+          ///
+          selectedIndex = index;
+
+          BpwidgetProps bpWidgetPropsObj = getWidgetProps(
+            widget.items[selectedIndex],
+          );
+          widget.onItemClicked!(bpWidgetPropsObj);
+          setState(() {});
+        },
+        labelText: 'label ${index + 1}',
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border:
+                selectedIndex == index
+                    ? Border.all(width: 2, color: Colors.teal)
+                    : Border.all(width: 2, color: Colors.transparent),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  enabled:
+                      false, // enabled: selectedIndex == index ? true : false,
+                  decoration: InputDecoration(
+                    // border: OutlineInputBorder(
+                    //   borderSide: BorderSide(color: Colors.transparent),
+                    // ),
+                    hintText: 'Textbox',
+                    label: Text('TextField'),
+                    floatingLabelStyle: TextStyle(fontSize: 14),
+
+                    // disabledBorder:
+                    //     selectedIndex == index
+                    //         ? OutlineInputBorder(
+                    //           borderRadius: BorderRadius.circular(10),
+                    //           borderSide: GlobalStyles.selectedBorderStyle,
+                    //         )
+                    //         : OutlineInputBorder(
+                    //           borderSide: GlobalStyles.unselectedBorderStyle,
+                    //         ),
+                  ),
+                ),
+              ),
+              selectedIndex == index
+                  ? GlobalStyles.selectedIcon
+                  : GlobalStyles.fillerSizedBox50,
+            ],
+          ),
         ),
       ),
-      PlaceholderWidgets.Dropdown => DropdownMenu(
-        dropdownMenuEntries: [],
-        enabled: false,
-        hintText: 'DropDownField',
-        width: 300,
-      ),
-      PlaceholderWidgets.Checkbox => Row(
-        children: [
-          Checkbox(
-            value: true,
-            onChanged: (value) {},
-            semanticLabel: 'Checkbox',
+      PlaceholderWidgets.Dropdown => DraggedHolder(
+        onTapDraggedControl: () {
+          selectedIndex = index;
+
+          BpwidgetProps bpWidgetPropsObj = getWidgetProps(
+            widget.items[selectedIndex],
+          );
+          widget.onItemClicked!(bpWidgetPropsObj);
+          setState(() {});
+        },
+        labelText: 'label ${index + 1}',
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border:
+                selectedIndex == index
+                    ? Border.all(width: 2, color: Colors.teal)
+                    : Border.all(width: 2, color: Colors.transparent),
           ),
-          Text('Checkbox'),
-        ],
-      ),
-      PlaceholderWidgets.Radio => Row(
-        children: [
-          Radio(
-            toggleable: false,
-            value: '',
-            groupValue: '',
-            onChanged: (value) {},
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+            children: [
+              SizedBox(
+                width: 300,
+                child: DropdownMenu(
+                  dropdownMenuEntries: [],
+                  enabled: false,
+                  hintText: 'DropDownField',
+                  width: 300,
+                  inputDecorationTheme: InputDecorationTheme(
+                    disabledBorder: InputBorder.none,
+                  ),
+                  // inputDecorationTheme: InputDecorationTheme(
+                  //   disabledBorder:
+                  //       selectedIndex == index
+                  //           ? OutlineInputBorder(
+                  //             borderRadius: BorderRadius.circular(10),
+                  //             borderSide: GlobalStyles.selectedBorderStyle,
+                  //           )
+                  //           : OutlineInputBorder(
+                  //             borderSide: GlobalStyles.unselectedBorderStyle,
+                  //           ),
+                  // ),
+                ),
+              ),
+              selectedIndex == index
+                  ? GlobalStyles.selectedIcon
+                  : GlobalStyles.fillerSizedBox50,
+            ],
           ),
-          Text('Radio'),
-        ],
+        ),
+      ),
+      PlaceholderWidgets.Checkbox => DraggedHolder(
+        onTapDraggedControl: () {
+          selectedIndex = index;
+
+          BpwidgetProps bpWidgetPropsObj = getWidgetProps(
+            widget.items[selectedIndex],
+          );
+          widget.onItemClicked!(bpWidgetPropsObj);
+          setState(() {});
+        },
+
+        labelText: 'label ${index + 1}',
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border:
+                selectedIndex == index
+                    ? Border.all(width: 2, color: Colors.teal)
+                    : Border.all(width: 2, color: Colors.transparent),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+            children: [
+              SizedBox(
+                width: 200,
+                height: 70,
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: true,
+                      onChanged: (value) {},
+                      semanticLabel: 'Checkbox',
+                    ),
+                    Text('Checkbox'),
+                  ],
+                ),
+              ),
+              GlobalStyles.fillerSizedBox50,
+              selectedIndex == index
+                  ? GlobalStyles.selectedIcon
+                  : GlobalStyles.fillerSizedBox50,
+            ],
+          ),
+        ),
+      ),
+      PlaceholderWidgets.Radio => DraggedHolder(
+        labelText: 'label ${index + 1}',
+        child: Row(
+          children: [
+            Radio(
+              toggleable: false,
+              value: '',
+              groupValue: '',
+              onChanged: (value) {},
+            ),
+            Text('Radio'),
+          ],
+        ),
       ),
       PlaceholderWidgets.Button => Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [ElevatedButton(onPressed: () {}, child: Text('Save'))],
       ),
-      PlaceholderWidgets.Label => Text('Label Field'),
+      PlaceholderWidgets.Label => Text('label ${index + 1}'),
     };
   }
 
@@ -144,24 +290,8 @@ class _ItemsPanelState extends State<ItemPanel> {
                       child: Center(child: getWidgetPlaceholders(e.value)),
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          itemsCopy.removeAt(e.key);
-                        });
-                      },
-                      icon: Icon(Icons.delete, color: Colors.red),
-                    ),
-                  ),
-                ],
+                ]
               );
-              // }
               return Padding(
                 padding: const EdgeInsets.only(
                   left: 100,
@@ -296,5 +426,40 @@ class _ItemsPanelState extends State<ItemPanel> {
         ),
       );
     }
+  }
+
+  BpwidgetProps getWidgetProps(PlaceholderWidgets wdg) {
+    return switch (wdg) {
+      PlaceholderWidgets.Textfield => BpwidgetProps(
+        label: 'label ${selectedIndex + 1}',
+        controlName: 'page1_',
+        controlType: 'Textbox',
+      ),
+      PlaceholderWidgets.Dropdown => BpwidgetProps(
+        label: 'label ${selectedIndex + 1}',
+        controlName: 'page1_',
+        controlType: 'Dropdown',
+      ),
+      PlaceholderWidgets.Checkbox => BpwidgetProps(
+        label: 'label ${selectedIndex + 1}',
+        controlName: 'page1_',
+        controlType: 'Checkbox',
+      ),
+      PlaceholderWidgets.Radio => BpwidgetProps(
+        label: 'label ${selectedIndex + 1}',
+        controlName: 'page1_',
+        controlType: 'Radio',
+      ),
+      PlaceholderWidgets.Button => BpwidgetProps(
+        label: 'label ${selectedIndex + 1}',
+        controlName: 'page1_',
+        controlType: 'Button',
+      ),
+      PlaceholderWidgets.Label => BpwidgetProps(
+        label: 'label ${selectedIndex + 1}',
+        controlName: 'page1_',
+        controlType: 'Textfield',
+      ),
+    };
   }
 }
