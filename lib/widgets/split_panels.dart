@@ -40,11 +40,15 @@ class _SplitPanelState extends State<SplitPanel> {
     final data = switch (start.$2) {
       Panel.upper => upper[start.$1],
       Panel.lower => lower[start.$1],
+      
     };
 
     setState(() {
       dragStart = start;
       hoveringData = data;
+      print("dragStart=>${dragStart}");
+      print("hoveringData=>${hoveringData}");
+      print("data=>${data}");
     });
   }
 
@@ -56,6 +60,7 @@ class _SplitPanelState extends State<SplitPanel> {
     setState(() {
       if (dropPreview!.$2 == Panel.upper) {
         upper.insert(max(dropPreview!.$1, upper.length), hoveringData!);
+        print("dropPreview=>${dropPreview}");
       }
     });
   }
@@ -81,34 +86,38 @@ class _SplitPanelState extends State<SplitPanel> {
               children: [
                 Positioned(
                   // for draggable component
-                  width: leftPanelWidth - 100,
+                  width: leftPanelWidth,
                   height: constraints.maxHeight,
                   left: 0,
-                  child: MyDropRegion(
-                    onDrop: drop,
-                    updateDropPreview: updateDropPreview,
-                    childSize: itemSize,
-                    columns: widget.columns,
-                    panel: Panel.lower,
-
-                    child: ItemPanel(
-                      crossAxisCount: widget.columns,
-                      spacing: widget.itemSpacing,
-                      items: lower,
-                      onDragStart: onItemDragStart,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(color: Colors.pink.shade100),
+                    child: MyDropRegion(
+                      onDrop: drop,
+                      updateDropPreview: updateDropPreview,
+                      childSize: itemSize,
+                      columns: widget.columns,
                       panel: Panel.lower,
-                      dragStart: dragStart,
-                      dropPreview: dropPreview,
-                      hoveringData: hoveringData,
+                    
+                      child: ItemPanel(
+                        width: leftPanelWidth - 100,
+                        crossAxisCount: widget.columns,
+                        spacing: widget.itemSpacing,
+                        items: lower,
+                        onDragStart: onItemDragStart,
+                        panel: Panel.lower,
+                        dragStart: dragStart,
+                        dropPreview: dropPreview,
+                        hoveringData: hoveringData,
+                      ),
                     ),
                   ),
                 ),
-                Positioned(
-                  width: 2,
-                  height: constraints.maxHeight,
-                  left: leftPanelWidth,
-                  child: ColoredBox(color: Colors.black),
-                ),
+                // Positioned(
+                //   width: 2,
+                //   height: constraints.maxHeight,
+                //   left: leftPanelWidth,
+                //   child: ColoredBox(color: Colors.black),
+                // ),
                 Positioned(
                   // centerpanel for dragtarget
                   width: centerPanelWidth,
@@ -123,6 +132,7 @@ class _SplitPanelState extends State<SplitPanel> {
                       columns: widget.columns,
                       panel: Panel.upper,
                       child: ItemPanel(
+                        width: leftPanelWidth - 100,
                         crossAxisCount: widget.columns,
                         spacing: widget.itemSpacing,
                         items: upper,
