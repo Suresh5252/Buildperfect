@@ -79,20 +79,15 @@ class _RightPanelState extends State<RightPanel> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => BpwidgetPropsBloc(), lazy: false),
-      ],
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          children: [
-            PagePropsButtonSegment(
-              onSegmentChanged: _segementButtonChangedListener,
-            ),
-            renderPanelsBasedOnSegment(),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        children: [
+          PagePropsButtonSegment(
+            onSegmentChanged: _segementButtonChangedListener,
+          ),
+          renderPanelsBasedOnSegment(),
+        ],
       ),
     );
   }

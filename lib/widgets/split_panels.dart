@@ -1,7 +1,16 @@
+/*
+    @auth     : karthick.d    06/10/2025
+    @desc     : parent container for all the three panel
+                split_panel
+                  items_panel
+
+*/
 import 'dart:math';
 
 import 'package:dashboard/bloc/bpwidgetprops/bpwidget_props_bloc.dart';
 import 'package:dashboard/bloc/bpwidgetprops/model/bpwidget_props.dart';
+import 'package:dashboard/bloc/bpwidgets/bpwidget_bloc.dart';
+import 'package:dashboard/bloc/bpwidgets/model/bpwidget.dart';
 import 'package:dashboard/types/drag_drop_types.dart';
 import 'package:dashboard/widgets/item_panel.dart';
 import 'package:dashboard/widgets/my_drop_region.dart';
@@ -19,8 +28,11 @@ class SplitPanel extends StatefulWidget {
 }
 
 class _SplitPanelState extends State<SplitPanel> {
-  final List<PlaceholderWidgets> upper = [];
-  final List<PlaceholderWidgets> lower = [
+  /// Todo1 : CREATE COLLECTION OF BPWIDGET
+
+  final List<PlaceholderWidgets> _upper = [];
+  List<BPWidget> upper = [];
+  final List<PlaceholderWidgets> _lower = [
     PlaceholderWidgets.Textfield,
     PlaceholderWidgets.Dropdown,
     PlaceholderWidgets.Checkbox,
@@ -29,10 +41,61 @@ class _SplitPanelState extends State<SplitPanel> {
     PlaceholderWidgets.Label,
   ];
 
+  final List<BPWidget> lower = [
+    BPWidget(
+      bpwidgetProps: BpwidgetProps(
+        label: '',
+        controlName: '',
+        controlType: PlaceholderWidgets.Textfield.name,
+      ),
+      widgetType: PlaceholderWidgets.Textfield,
+    ),
+    BPWidget(
+      bpwidgetProps: BpwidgetProps(
+        label: '',
+        controlName: '',
+        controlType: PlaceholderWidgets.Dropdown.name,
+      ),
+      widgetType: PlaceholderWidgets.Dropdown,
+    ),
+    BPWidget(
+      bpwidgetProps: BpwidgetProps(
+        label: '',
+        controlName: '',
+        controlType: PlaceholderWidgets.Checkbox.name,
+      ),
+      widgetType: PlaceholderWidgets.Checkbox,
+    ),
+    BPWidget(
+      bpwidgetProps: BpwidgetProps(
+        label: '',
+        controlName: '',
+        controlType: PlaceholderWidgets.Radio.name,
+      ),
+      widgetType: PlaceholderWidgets.Radio,
+    ),
+    BPWidget(
+      bpwidgetProps: BpwidgetProps(
+        label: '',
+        controlName: '',
+        controlType: PlaceholderWidgets.Button.name,
+      ),
+      widgetType: PlaceholderWidgets.Button,
+    ),
+    BPWidget(
+      bpwidgetProps: BpwidgetProps(
+        label: '',
+        controlName: '',
+        controlType: PlaceholderWidgets.Label.name,
+      ),
+      widgetType: PlaceholderWidgets.Label,
+    ),
+  ];
+
   PanelLocation dragStart = (-1, Panel.lower);
   PanelLocation? dropPreview;
 
-  PlaceholderWidgets? hoveringData;
+  BPWidget? hoveringData;
   BpwidgetProps selectedWidget = BpwidgetProps(
     label: '',
     controlName: '',
@@ -73,8 +136,16 @@ class _SplitPanelState extends State<SplitPanel> {
 
   @override
   Widget build(BuildContext context) {
+return BlocConsumer<BpwidgetBloc, BpwidgetState>(
+      listener: (context, state) {
+        print(
+          'inside splitpanel builder method => ${state.bpWidgetsList?.length} ${state.bpWidgetsList![0].bpwidgetProps}',
+        );
+        upper = state.bpWidgetsList!;
+      },
+      builder: (context, state) {
     return Scaffold(
-      appBar: AppBar(title: Text('BuildPerfect'), elevation: 2),
+      appBar: AppBar(title: Text(state.bpWidgetsList![0].widgetType.name), elevation: 2,),
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           final gutter = widget.columns + 1;
@@ -170,6 +241,8 @@ class _SplitPanelState extends State<SplitPanel> {
           );
         },
       ),
+    );
+ },
     );
   }
 }

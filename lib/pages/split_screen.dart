@@ -8,8 +8,11 @@
 
 */
 
+import 'package:dashboard/bloc/bpwidgetprops/bpwidget_props_bloc.dart';
+import 'package:dashboard/bloc/bpwidgets/bpwidget_bloc.dart';
 import 'package:dashboard/widgets/split_panels.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SplitScreen extends StatefulWidget {
   const SplitScreen({super.key});
@@ -20,6 +23,12 @@ class SplitScreen extends StatefulWidget {
 class _SplitScreenState extends State<SplitScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: SplitPanel());
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => BpwidgetPropsBloc(), lazy: false),
+        BlocProvider(create: (context) => BpwidgetBloc(), lazy: false),
+      ],
+      child: Scaffold(body: SplitPanel()),
+    );
   }
 }

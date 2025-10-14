@@ -9,6 +9,7 @@ import 'dart:ui';
 
 import 'package:dashboard/appstyles/global_styles.dart';
 import 'package:dashboard/bloc/bpwidgetprops/model/bpwidget_props.dart';
+import 'package:dashboard/bloc/bpwidgets/model/bpwidget.dart';
 import 'package:dashboard/types/drag_drop_types.dart';
 import 'package:dashboard/widgets/containers/dragged_holder.dart';
 import 'package:dashboard/widgets/my_draggable_widget.dart';
@@ -18,14 +19,15 @@ import 'package:flutter/material.dart';
 
 class ItemPanel extends StatefulWidget {
   final double width;
-  final List<PlaceholderWidgets> items;
+  // final List<PlaceholderWidgets> items;
+  final List<BPWidget> items;
   final int crossAxisCount;
   final double spacing;
   final Function(PanelLocation) onDragStart;
   final Panel panel;
   final PanelLocation? dragStart;
   final PanelLocation? dropPreview;
-  final PlaceholderWidgets? hoveringData;
+  final BPWidget? hoveringData;
   final Function(BpwidgetProps item)? onItemClicked;
   const ItemPanel({
     super.key,
@@ -47,8 +49,8 @@ class ItemPanel extends StatefulWidget {
 
 class _ItemsPanelState extends State<ItemPanel> {
   String searchText = '';
-  List<PlaceholderWidgets> itemsCopy = [];
-  List<PlaceholderWidgets> filteredItems = [];
+  List<BPWidget> itemsCopy = [];
+  List<BPWidget> filteredItems = [];
   List<PlaceholderWidgets> displayList = [];
   TextEditingController searchBarController = TextEditingController();
   bool searchOpt = false;
@@ -66,9 +68,11 @@ class _ItemsPanelState extends State<ItemPanel> {
   int selectedIndex = 0;
 
   Widget getWidgetPlaceholders(
+    BpwidgetProps props,
     PlaceholderWidgets controlName, {
     int index = 0,
   }) {
+    print('BpwidgetProps props => $props ');
     return switch (controlName) {
       PlaceholderWidgets.Textfield => DraggedHolder(
         onTapDraggedControl: () {
@@ -79,12 +83,13 @@ class _ItemsPanelState extends State<ItemPanel> {
           selectedIndex = index;
 
           BpwidgetProps bpWidgetPropsObj = getWidgetProps(
-            widget.items[selectedIndex],
+            widget.items[selectedIndex].widgetType,
           );
           widget.onItemClicked!(bpWidgetPropsObj);
           setState(() {});
         },
-        labelText: 'label ${index + 1}',
+        labelText:
+            props.label.isEmpty ? 'label ${index + 1}' : props.controlName,
         child: DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
@@ -144,7 +149,7 @@ class _ItemsPanelState extends State<ItemPanel> {
           selectedIndex = index;
 
           BpwidgetProps bpWidgetPropsObj = getWidgetProps(
-            widget.items[selectedIndex],
+            widget.items[selectedIndex].widgetType,
           );
           widget.onItemClicked!(bpWidgetPropsObj);
           setState(() {});
@@ -208,7 +213,7 @@ class _ItemsPanelState extends State<ItemPanel> {
           selectedIndex = index;
 
           BpwidgetProps bpWidgetPropsObj = getWidgetProps(
-            widget.items[selectedIndex],
+            widget.items[selectedIndex].widgetType,
           );
           widget.onItemClicked!(bpWidgetPropsObj);
           setState(() {});
@@ -261,7 +266,31 @@ class _ItemsPanelState extends State<ItemPanel> {
         ),
       ),
       PlaceholderWidgets.Radio => DraggedHolder(
+        onTapDraggedControl: () {
+          selectedIndex = index;
+
+          BpwidgetProps bpWidgetPropsObj = getWidgetProps(
+            widget.items[selectedIndex].widgetType,
+          );
+          widget.onItemClicked!(bpWidgetPropsObj);
+          setState(() {});
+        },
         labelText: 'label ${index + 1}',
+child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border:
+                selectedIndex == index
+                    ? Border.all(width: 2, color: Colors.teal)
+                    : Border.all(width: 2, color: Colors.transparent),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+            children: [
+              SizedBox(
+                width: 200,
+                height: 70,
         child: Row(
           children: [
             Radio(
@@ -272,6 +301,14 @@ class _ItemsPanelState extends State<ItemPanel> {
             ),
             Text('Radio'),
           ],
+        ),
+      ),
+ GlobalStyles.fillerSizedBox50,
+              selectedIndex == index
+                  ? GlobalStyles.selectedIcon
+                  : GlobalStyles.fillerSizedBox50,
+            ],
+          ),
         ),
       ),
       PlaceholderWidgets.Button => Row(
@@ -304,7 +341,7 @@ class _ItemsPanelState extends State<ItemPanel> {
   Widget build(BuildContext context) {
     /// have a copy of dragstartCopy to keep the local copy
     /// so
-    final itemsCopy = List<PlaceholderWidgets>.from(widget.items);
+    final itemsCopy = List<BPWidget>.from(widget.items);
     print('itemscopy => $itemsCopy');
     if (widget.panel == Panel.upper) {
       return ListView(
@@ -321,7 +358,11 @@ class _ItemsPanelState extends State<ItemPanel> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Center(
-                    child: getWidgetPlaceholders(e.value, index: e.key),
+                    child: getWidgetPlaceholders(
+                      e.value.bpwidgetProps!,
+                      e.value.widgetType,
+                      index: e.key,
+                    ),
                   ),
                 ),
               );
@@ -392,7 +433,7 @@ class _ItemsPanelState extends State<ItemPanel> {
                                 searchText = value.toLowerCase();
                                 filteredItems =
                                     itemsCopy.where((item) {
-                                      return item.name.toLowerCase().contains(
+                                      return item.widgetType.name.toLowerCase().contains(
                                         searchText,
                                       );
                                     }).toList();
@@ -428,10 +469,10 @@ class _ItemsPanelState extends State<ItemPanel> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                renderIconsForFormControlsCard(e.value),
+                                renderIconsForFormControlsCard(e.value.widgetType),
 
                                 Text(
-                                  e.value.name,
+                                  e.value.widgetType.name,
                                   style: TextStyle(
                                     color: textColor,
                                     fontSize: 12,
@@ -444,7 +485,7 @@ class _ItemsPanelState extends State<ItemPanel> {
                         return Draggable(
                           feedback: child,
                           child: MyDraggableWidget(
-                            data: e.value.name,
+                            data: e.value.widgetType.name,
                             onDragStart:
                                 () => widget.onDragStart((
                                   index != -1 ? index : e.key,

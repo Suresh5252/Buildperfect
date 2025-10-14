@@ -5,10 +5,10 @@ class BpwidgetForms {
     'label': FormControl<String>(),
     'controlName': FormControl<String>(),
     'controlType': FormControl<String>(),
-    'isRequired': FormControl<bool>(),
+    'isRequired': FormControl<String>(),
     'min': FormControl<String>(),
     'max': FormControl<String>(),
-    'isVerificationRequired': FormControl<bool>(),
+    'isVerificationRequired': FormControl<String>(),
     'validationPatterns': FormControl<String>(),
   });
 }
